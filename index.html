@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Ôn tập Sinh học 10 — Sinh học tế bào</title>
+<style>
+  :root{
+    --text:#2C2C2B; --text2:#7D7A75; --canvas:#FFFFFF; --soft:#F9F8F7;
+    --surface2:#F0EFED; --border:#E6E5E3;
+    --blue:#2783DE; --blue-soft:#E5F2FC;
+    --green:#46A171; --green-soft:#E8F1EC;
+    --orange:#D5803B; --orange-soft:#FBEBDE;
+    --red:#E56458; --red-soft:#FCE9E7;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--soft);color:var(--text);
+    font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  .wrap{max-width:1000px;margin:0 auto;padding:24px}
+  header.hero{background:var(--canvas);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:16px}
+  h1{font-size:26px;line-height:1.25;margin:0 0 6px}
+  .sub{color:var(--text2);font-size:14px;margin:0}
+  .pill{display:inline-block;background:var(--blue-soft);color:#1a5f9e;border-radius:6px;padding:3px 10px;font-size:13px;font-weight:600;margin-right:8px;margin-top:10px}
+  .card{background:var(--canvas);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:16px}
+  .card h2{font-size:20px;margin:0 0 4px}
+  .card h3{font-size:17px;margin:0 0 12px}
+  .hint{color:var(--text2);font-size:14px;margin:0 0 16px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  label{display:block;font-size:14px;font-weight:600;margin-bottom:6px}
+  input[type=text],input[type=password],select{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:15px;background:var(--canvas);color:var(--text);min-height:44px}
+  input:focus,select:focus,button:focus-visible{outline:2px solid var(--blue);outline-offset:1px}
+  button{font:inherit;font-weight:600;border-radius:8px;border:1px solid var(--border);background:var(--canvas);color:var(--text);padding:11px 18px;min-height:44px;cursor:pointer}
+  button:hover{background:var(--surface2)}
+  button:disabled{opacity:.55;cursor:not-allowed}
+  button.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+  button.primary:hover{background:#1f6fbd}
+  button.ghost{background:transparent}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end}
+  .q{border-top:1px solid var(--border);padding:16px 0}
+  .q:first-child{border-top:none;padding-top:0}
+  .qhead{display:flex;gap:10px;align-items:flex-start;margin-bottom:10px}
+  .qnum{flex:0 0 auto;background:var(--surface2);border-radius:6px;font-size:13px;font-weight:700;padding:2px 8px;margin-top:2px}
+  .lvtag{font-size:11px;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+  .opts{display:grid;gap:6px;margin-left:44px}
+  .expl{margin-left:44px;margin-top:8px;background:var(--soft);border-left:3px solid var(--blue);border-radius:0 8px 8px 0;padding:10px 14px;font-size:14px;color:#4a4845}
+  @media(max-width:640px){.opts,.expl{margin-left:0}.grid2{grid-template-columns:1fr}}
+  .opt{display:flex;gap:10px;align-items:flex-start;padding:9px 12px;border:1px solid var(--border);border-radius:8px;cursor:pointer;background:var(--canvas)}
+  .opt:hover{background:var(--soft)}
+  .opt input{margin-top:4px;accent-color:var(--blue);width:18px;height:18px;flex:0 0 auto}
+  .opt.correct{background:var(--green-soft);border-color:var(--green)}
+  .opt.wrong{background:var(--red-soft);border-color:var(--red)}
+  table.ds{width:100%;border-collapse:collapse}
+  table.ds td,table.ds th{border-bottom:1px solid var(--border);padding:10px 8px;text-align:left;vertical-align:top;font-size:15px}
+  table.ds th{font-size:13px;color:var(--text2);font-weight:600}
+  table.ds td.tf{width:64px;text-align:center;white-space:nowrap}
+  .ok{color:var(--green);font-weight:700}
+  .no{color:var(--red);font-weight:700}
+  .scorebar{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:4px 0 20px}
+  @media(max-width:640px){.scorebar{grid-template-columns:1fr}}
+  .sc{border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center;background:var(--soft)}
+  .sc .lab{font-size:13px;color:var(--text2)}
+  .sc .val{font-size:28px;font-weight:700;margin-top:4px}
+  .sc.total{background:var(--blue-soft);border-color:#bcdcf7}
+  .sc.total .val{color:#1a5f9e}
+  .attempt{display:inline-block;background:var(--orange-soft);color:#8f5320;border:1px solid #F0D3B6;border-radius:8px;padding:8px 14px;font-weight:700;margin-bottom:16px}
+  pre.summary{background:var(--soft);border:1px solid var(--border);border-radius:8px;padding:16px;white-space:pre-wrap;font:13px/1.7 Menlo,Consolas,monospace;margin:0 0 12px}
+  canvas{max-width:100%;height:auto}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--text2);margin-top:8px}
+  .msg{font-size:14px;margin-top:8px}
+  .msg.err{color:var(--red)}
+  .msg.good{color:var(--green)}
+  .hidden{display:none}
+  .aiout{border:1px solid var(--border);border-radius:10px;padding:16px 20px;background:var(--soft);font-size:15px;line-height:1.65}
+  .aiout h4{margin:18px 0 6px;font-size:16px}
+  .aiout h4:first-child{margin-top:0}
+  .aiout ul{margin:6px 0;padding-left:20px}
+  .spinner{display:inline-block;width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite;vertical-align:-2px;margin-right:6px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  @media (prefers-reduced-motion: reduce){.spinner{animation:none}}
+  footer{color:var(--text2);font-size:13px;text-align:center;padding:8px 0 32px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <h1>Ôn tập Sinh học 10 — Chủ đề Sinh học tế bào</h1>
+    <p class="sub">Phần I: 28 câu trắc nghiệm (7,0 điểm) · Phần II: 3 câu Đúng/Sai (3,0 điểm) · Tổng 10,0 điểm</p>
+    <div>
+      <span class="pill">Nhận biết 39%</span><span class="pill">Thông hiểu 29%</span>
+      <span class="pill">Vận dụng 21%</span><span class="pill">Vận dụng cao 11%</span>
+    </div>
+  </header>
+
+  <section class="card">
+    <h2>Thông tin học sinh</h2>
+    <p class="hint">Nhập họ tên và lớp để hệ thống ghi nhận số lượt làm bài (lưu trên trình duyệt này).</p>
+    <div class="grid2">
+      <div><label for="hsName">Họ và tên</label><input id="hsName" type="text" placeholder="Nguyễn Văn A" /></div>
+      <div><label for="hsClass">Lớp</label><input id="hsClass" type="text" placeholder="10A1" /></div>
+    </div>
+    <div class="msg" id="prevInfo"></div>
+  </section>
+
+  <section class="card">
+    <h2>Cấu hình AI (Google Gemini)</h2>
+    <p class="hint">API Key được lưu cục bộ trong trình duyệt của bạn và chỉ gửi tới máy chủ Google khi phân tích kết quả.</p>
+    <div class="grid2">
+      <div><label for="apiKey">API Key</label><input id="apiKey" type="password" placeholder="AIza..." autocomplete="off" /></div>
+      <div><label for="modelSel">Mô hình Gemini</label><select id="modelSel"></select></div>
+    </div>
+    <div class="row" style="margin-top:12px">
+      <button id="saveKey" class="primary">Lưu API Key</button>
+      <button id="refreshModels" class="ghost">Cập nhật danh sách mô hình mới nhất</button>
+      <button id="clearKey" class="ghost">Xoá key</button>
+    </div>
+    <div class="msg" id="keyMsg"></div>
+  </section>
+
+  <section class="card">
+    <h2>Phần I. Trắc nghiệm nhiều phương án lựa chọn</h2>
+    <p class="hint">28 câu · mỗi câu chọn 1 phương án đúng · 0,25 điểm/câu · tổng 7,0 điểm.</p>
+    <div id="p1"></div>
+  </section>
+
+  <section class="card">
+    <h2>Phần II. Trắc nghiệm Đúng/Sai</h2>
+    <p class="hint">3 câu, mỗi câu 4 ý · điểm luỹ tiến: đúng 1 ý = 0,10 · 2 ý = 0,25 · 3 ý = 0,50 · 4 ý = 1,00 điểm · tổng 3,0 điểm.</p>
+    <div id="p2"></div>
+  </section>
+
+  <section class="card">
+    <div class="row">
+      <button id="submitBtn" class="primary">Nộp bài &amp; chấm điểm</button>
+      <button id="resetBtn" class="ghost">Làm lại từ đầu</button>
+    </div>
+    <div class="msg" id="submitMsg"></div>
+  </section>
+
+  <section class="card hidden" id="resultCard">
+    <h2>Kết quả</h2>
+    <div class="attempt" id="attemptLine"></div>
+    <div class="scorebar">
+      <div class="sc"><div class="lab">Phần I (tối đa 7,0)</div><div class="val" id="scP1">–</div></div>
+      <div class="sc"><div class="lab">Phần II (tối đa 3,0)</div><div class="val" id="scP2">–</div></div>
+      <div class="sc total"><div class="lab">Tổng điểm (10,0)</div><div class="val" id="scTotal">–</div></div>
+    </div>
+    <div id="p2detail"></div>
+    <h3 style="margin-top:24px">Năng lực theo mảng kiến thức</h3>
+    <canvas id="chart" width="920" height="320"></canvas>
+    <div class="legend"><span>■ ≥ 80%: vững</span><span>■ 50–79%: cần củng cố</span><span>■ &lt; 50%: cần học lại</span></div>
+    <h3 style="margin-top:24px">Tóm tắt kết quả (để sao chép hoặc chụp lại)</h3>
+    <pre class="summary" id="summaryBox"></pre>
+    <button id="copyBtn" class="ghost">Sao chép tóm tắt</button>
+    <span class="msg" id="copyMsg"></span>
+  </section>
+
+  <section class="card hidden" id="aiCard">
+    <h2>Phân tích &amp; khuyến nghị từ AI</h2>
+    <p class="hint">AI phân tích theo từng phần và từng mảng kiến thức, kèm giải thích ngắn gọn cho các câu làm sai.</p>
+    <div class="row"><button id="aiBtn" class="primary">Phân tích kết quả bằng AI</button></div>
+    <div class="msg" id="aiMsg"></div>
+    <div class="aiout hidden" id="aiOut" style="margin-top:16px"></div>
+  </section>
+
+  <section class="card hidden" id="reviewCard">
+    <h2>Xem lại bài làm &amp; đáp án</h2>
+    <div id="review"></div>
+  </section>
+
+  <footer>Công cụ ôn tập — Trường THPT Đốc Binh Kiều, Cai Lậy.</footer>
+</div>
+<script>
+const AREAS = {
+  HH: "Thành phần hoá học của tế bào",
+  CT: "Cấu trúc tế bào",
+  TD: "Trao đổi chất qua màng",
+  TT: "Thông tin giữa các tế bào",
+  PB: "Chu kì tế bào và phân bào"
+};
+
+const P1 = [
+{q:"Nguyên tố nào sau đây là nguyên tố vi lượng trong tế bào?",o:["Carbon (C).","Iron (Fe).","Hydrogen (H).","Oxygen (O)."],a:1,area:"HH",lv:"Nhận biết",e:"Nguyên tố vi lượng chiếm dưới 0,01% khối lượng cơ thể, gồm Fe, Cu, Zn, Mn, I… Còn C, H, O là nguyên tố đa lượng."},
+{q:"Đơn phân cấu tạo nên phân tử protein là",o:["nucleotide.","glucose.","amino acid.","acid béo."],a:2,area:"HH",lv:"Nhận biết",e:"Protein là đại phân tử đa phân, đơn phân là amino acid nối nhau bằng liên kết peptide."},
+{q:"Hai mạch đơn của phân tử DNA liên kết với nhau bằng loại liên kết nào?",o:["Liên kết peptide.","Liên kết ion.","Liên kết cộng hoá trị.","Liên kết hydrogen."],a:3,area:"HH",lv:"Nhận biết",e:"Các nucleotide trên hai mạch bắt cặp bổ sung A–T (2 liên kết hydrogen) và G–C (3 liên kết hydrogen)."},
+{q:"Thành phần nào sau đây KHÔNG có ở tế bào nhân sơ?",o:["Ribosome.","Nhân có màng bao bọc.","Màng sinh chất.","Tế bào chất."],a:1,area:"CT",lv:"Nhận biết",e:"Tế bào nhân sơ chưa có nhân hoàn chỉnh: vùng nhân chứa DNA dạng vòng, không được bao bọc bởi màng nhân."},
+{q:"Bào quan nào trực tiếp thực hiện quá trình tổng hợp protein trong tế bào?",o:["Lysosome.","Bộ máy Golgi.","Ribosome.","Không bào."],a:2,area:"CT",lv:"Nhận biết",e:"Ribosome là nơi diễn ra dịch mã, lắp ráp các amino acid thành chuỗi polypeptide."},
+{q:"Bào quan là nơi diễn ra các giai đoạn chủ yếu của hô hấp tế bào, tổng hợp phần lớn ATP cho tế bào nhân thực là",o:["ti thể.","lục lạp.","lưới nội chất trơn.","trung thể."],a:0,area:"CT",lv:"Nhận biết",e:"Ti thể có màng kép, là nơi diễn ra chu trình Krebs và chuỗi truyền electron tạo phần lớn ATP."},
+{q:"Theo mô hình khảm động, màng sinh chất được cấu tạo chủ yếu từ",o:["cellulose và protein.","lớp kép phospholipid và protein.","DNA và protein.","glycogen và cholesterol."],a:1,area:"CT",lv:"Nhận biết",e:"Màng sinh chất gồm lớp kép phospholipid với các protein khảm vào (xuyên màng hoặc bám màng), ngoài ra còn có cholesterol, glycoprotein, glycolipid."},
+{q:"Hình thức vận chuyển các chất qua màng từ nơi có nồng độ cao đến nơi có nồng độ thấp và không tiêu tốn năng lượng được gọi là",o:["vận chuyển chủ động.","nhập bào.","xuất bào.","vận chuyển thụ động."],a:3,area:"TD",lv:"Nhận biết",e:"Vận chuyển thụ động (khuếch tán đơn giản, khuếch tán tăng cường, thẩm thấu) diễn ra theo chiều gradient nồng độ, không tiêu tốn ATP."},
+{q:"Quá trình truyền thông tin giữa các tế bào diễn ra theo trình tự ba giai đoạn nào?",o:["Truyền tin nội bào → tiếp nhận → đáp ứng.","Tiếp nhận → truyền tin nội bào → đáp ứng.","Đáp ứng → tiếp nhận → truyền tin nội bào.","Tiếp nhận → đáp ứng → truyền tin nội bào."],a:1,area:"TT",lv:"Nhận biết",e:"Ba giai đoạn: tiếp nhận tín hiệu nhờ thụ thể → truyền tin nội bào qua các phân tử trung gian → đáp ứng của tế bào."},
+{q:"Kì trung gian của chu kì tế bào gồm các pha lần lượt là",o:["G1 → S → G2.","S → G1 → G2.","G1 → G2 → S.","S → G2 → G1."],a:0,area:"PB",lv:"Nhận biết",e:"Kì trung gian gồm pha G1 (sinh trưởng), pha S (nhân đôi DNA và nhiễm sắc thể), pha G2 (chuẩn bị cho phân bào)."},
+{q:"Trong nguyên phân, các nhiễm sắc thể kép co xoắn cực đại và xếp thành một hàng trên mặt phẳng xích đạo của thoi phân bào ở",o:["kì đầu.","kì giữa.","kì sau.","kì cuối."],a:1,area:"PB",lv:"Nhận biết",e:"Đặc trưng của kì giữa nguyên phân là nhiễm sắc thể kép co xoắn cực đại, xếp thành một hàng ở mặt phẳng xích đạo."},
+{q:"Nước có khả năng hoà tan được nhiều chất trong tế bào chủ yếu là do",o:["phân tử nước có kích thước rất nhỏ.","phân tử nước có tính phân cực.","nước có nhiệt dung riêng cao.","nước có thể tồn tại ở ba trạng thái."],a:1,area:"HH",lv:"Thông hiểu",e:"Đôi electron dùng chung bị lệch về phía oxygen làm phân tử nước phân cực, nên nước bao quanh và hoà tan tốt các chất phân cực, chất dạng ion."},
+{q:"Khi đun nóng, protein bị biến tính và mất chức năng sinh học chủ yếu là do",o:["toàn bộ liên kết peptide trong chuỗi polypeptide bị phá vỡ.","thành phần các amino acid bị thay đổi.","cấu trúc không gian đặc trưng của protein bị phá vỡ.","protein bị hoà tan hết vào nước."],a:2,area:"HH",lv:"Thông hiểu",e:"Nhiệt độ cao phá vỡ các liên kết yếu duy trì cấu trúc bậc 2, 3, 4 khiến protein mất cấu hình không gian đặc trưng, do đó mất chức năng."},
+{q:"Tế bào tuyến tuỵ tiết rất nhiều enzyme tiêu hoá ra ngoài tế bào. Bào quan nào sau đây phát triển mạnh nhất ở tế bào này?",o:["Lưới nội chất hạt.","Lưới nội chất trơn.","Lysosome.","Trung thể."],a:0,area:"CT",lv:"Thông hiểu",e:"Enzyme tiêu hoá bản chất là protein tiết, được tổng hợp trên ribosome gắn với lưới nội chất hạt rồi chuyển sang bộ máy Golgi để hoàn thiện và xuất bào."},
+{q:"Chức năng chủ yếu của bộ máy Golgi trong tế bào là",o:["tổng hợp phần lớn ATP cho tế bào.","phân giải các bào quan già và chất độc.","nhân đôi DNA của tế bào.","thu nhận, hoàn thiện, đóng gói và phân phối sản phẩm."],a:3,area:"CT",lv:"Thông hiểu",e:"Golgi được ví như phân xưởng hoàn thiện – đóng gói – phân phối protein và lipid nhận từ lưới nội chất."},
+{q:"Chất nào sau đây khuếch tán trực tiếp qua lớp kép phospholipid của màng sinh chất dễ dàng nhất?",o:["Ion Na⁺.","Khí O₂.","Glucose.","Amino acid."],a:1,area:"TD",lv:"Thông hiểu",e:"O₂ là phân tử nhỏ, không phân cực nên tan được trong phần đuôi kị nước và khuếch tán trực tiếp; ion và chất phân cực phải đi qua protein vận chuyển."},
+{q:"Đặt tế bào hồng cầu người vào dung dịch nhược trương thì hiện tượng nào sau đây xảy ra?",o:["Tế bào mất nước và teo lại.","Tế bào không thay đổi vì có thành tế bào bảo vệ.","Tế bào hút nước, trương lên và có thể bị vỡ.","Tế bào xảy ra hiện tượng co nguyên sinh."],a:2,area:"TD",lv:"Thông hiểu",e:"Môi trường nhược trương có nồng độ chất tan thấp hơn trong tế bào nên nước thẩm thấu vào; hồng cầu không có thành tế bào nên có thể vỡ (hiện tượng tan bào)."},
+{q:"Thụ thể tiếp nhận các hormone steroid (tan trong lipid) thường nằm ở vị trí nào của tế bào đích?",o:["Bên trong tế bào (tế bào chất hoặc nhân).","Trên bề mặt ngoài màng sinh chất.","Trên thành tế bào.","Trong khoang của lysosome."],a:0,area:"TT",lv:"Thông hiểu",e:"Hormone steroid tan trong lipid nên khuếch tán qua màng sinh chất và liên kết với thụ thể nằm trong tế bào chất hoặc trong nhân."},
+{q:"Kết thúc quá trình nguyên phân, từ một tế bào mẹ có bộ nhiễm sắc thể 2n tạo ra",o:["2 tế bào con có bộ nhiễm sắc thể n.","4 tế bào con có bộ nhiễm sắc thể n.","2 tế bào con có bộ nhiễm sắc thể 2n giống tế bào mẹ.","4 tế bào con có bộ nhiễm sắc thể 2n."],a:2,area:"PB",lv:"Thông hiểu",e:"Nguyên phân giữ nguyên bộ nhiễm sắc thể: 1 tế bào mẹ 2n tạo 2 tế bào con 2n giống nhau và giống tế bào mẹ."},
+{q:"Vì sao khi cơ thể sốt cao kéo dài trên 42 °C thì rất nguy hiểm?",o:["Vì nước trong tế bào bị bay hơi hết.","Vì các enzyme (bản chất protein) bị biến tính, mất hoạt tính xúc tác.","Vì DNA trong nhân bị phân huỷ hoàn toàn.","Vì màng sinh chất bị hoá rắn, ngừng trao đổi chất."],a:1,area:"HH",lv:"Vận dụng",e:"Enzyme là protein; nhiệt độ quá cao làm biến tính enzyme, các phản ứng chuyển hoá trong tế bào bị rối loạn nghiêm trọng."},
+{q:"Vì sao tế bào có kích thước nhỏ thì trao đổi chất với môi trường hiệu quả hơn tế bào có kích thước lớn?",o:["Vì tế bào nhỏ có nhiều bào quan hơn.","Vì tế bào nhỏ chứa nhiều nước hơn.","Vì tế bào nhỏ có tỉ lệ diện tích bề mặt trên thể tích (S/V) lớn hơn.","Vì tế bào nhỏ có màng sinh chất dày hơn."],a:2,area:"CT",lv:"Vận dụng",e:"Tỉ lệ S/V càng lớn thì diện tích màng phục vụ cho mỗi đơn vị thể tích càng nhiều, tốc độ trao đổi chất và khuếch tán trong tế bào càng nhanh."},
+{q:"Rau bị héo, khi ngâm vào nước sạch một thời gian thì tươi trở lại. Giải thích nào sau đây đúng?",o:["Nước sạch là môi trường nhược trương so với dịch bào nên nước thẩm thấu vào làm tế bào trương nước.","Nước sạch là môi trường ưu trương nên tế bào hút được chất khoáng.","Nước cung cấp trực tiếp ATP giúp tế bào phục hồi.","Nước làm tan thành cellulose khiến lá mềm trở lại."],a:0,area:"TD",lv:"Vận dụng",e:"Dịch bào có nồng độ chất tan cao hơn nước sạch nên nước thẩm thấu vào không bào, tế bào trương lên, mô lá căng và rau tươi trở lại."},
+{q:"Khi muối dưa, người ta thường xát muối vào rau. Cơ sở khoa học của việc này là",o:["muối cung cấp khoáng cho vi khuẩn lactic phát triển nhanh.","môi trường ưu trương làm tế bào rau tiết dịch và làm vi sinh vật gây thối mất nước, bị ức chế.","muối phá vỡ thành cellulose của tế bào rau.","dung dịch muối là môi trường nhược trương giúp rau hút nước, giòn hơn."],a:1,area:"TD",lv:"Vận dụng",e:"Dung dịch muối đậm đặc là môi trường ưu trương: nước từ tế bào rau đi ra tạo dịch cho vi khuẩn lactic lên men, đồng thời vi sinh vật gây thối bị mất nước nên bị ức chế."},
+{q:"Ở người mắc đái tháo đường type 2, nồng độ insulin trong máu có thể bình thường hoặc cao nhưng tế bào vẫn hấp thu glucose kém. Nguyên nhân chủ yếu liên quan đến giai đoạn nào của quá trình truyền tin?",o:["Giai đoạn tiếp nhận: thụ thể insulin giảm số lượng hoặc giảm đáp ứng với tín hiệu.","Giai đoạn tạo tín hiệu: tuyến tuỵ hoàn toàn ngừng tiết insulin.","Giai đoạn phân giải insulin trong lysosome.","Giai đoạn nhân đôi DNA của tế bào đích."],a:0,area:"TT",lv:"Vận dụng",e:"Đái tháo đường type 2 gắn với tính kháng insulin: thụ thể insulin trên tế bào đích giảm số lượng hoặc giảm nhạy cảm nên tín hiệu không được tiếp nhận hiệu quả."},
+{q:"Một tế bào sinh dưỡng của loài có 2n = 8 thực hiện nguyên phân liên tiếp 3 lần. Số tế bào con tạo thành và bộ nhiễm sắc thể của mỗi tế bào con là",o:["6 tế bào, mỗi tế bào có 8 nhiễm sắc thể.","8 tế bào, mỗi tế bào có 4 nhiễm sắc thể.","8 tế bào, mỗi tế bào có 8 nhiễm sắc thể.","16 tế bào, mỗi tế bào có 8 nhiễm sắc thể."],a:2,area:"PB",lv:"Vận dụng",e:"Số tế bào con = 2³ = 8. Nguyên phân giữ nguyên bộ nhiễm sắc thể nên mỗi tế bào con vẫn có 2n = 8 nhiễm sắc thể."},
+{q:"Tế bào thần kinh duy trì nồng độ K⁺ bên trong cao hơn và Na⁺ bên trong thấp hơn so với bên ngoài. Nếu dùng chất ức chế hoàn toàn hô hấp tế bào thì điều gì xảy ra?",o:["Sự chênh lệch nồng độ vẫn được giữ nguyên vì bơm Na⁺/K⁺ không cần năng lượng.","Chênh lệch nồng độ tăng lên do khuếch tán mạnh hơn.","Bơm Na⁺/K⁺ thiếu ATP nên ngừng hoạt động, chênh lệch nồng độ hai ion giảm dần.","Tế bào chuyển sang vận chuyển các ion bằng thẩm thấu."],a:2,area:"TD",lv:"Vận dụng cao",e:"Gradient Na⁺/K⁺ được duy trì nhờ bơm Na⁺/K⁺ vận chuyển chủ động, tiêu tốn ATP. Thiếu ATP, bơm ngừng hoạt động, các ion khuếch tán thụ động làm gradient mất dần."},
+{q:"Tế bào ung thư phân chia liên tục, không kiểm soát. Nguyên nhân ở cấp độ chu kì tế bào là",o:["tế bào ung thư chuyển từ nguyên phân sang giảm phân.","các điểm kiểm soát chu kì tế bào bị hỏng nên tế bào vẫn vượt qua dù DNA sai hỏng hoặc tín hiệu không phù hợp.","tế bào ung thư không cần nhân đôi DNA trước khi phân chia.","tế bào ung thư có số lượng ti thể nhiều hơn bình thường."],a:1,area:"PB",lv:"Vận dụng cao",e:"Các điểm kiểm soát (G1, G2, điểm kiểm soát thoi phân bào) bị rối loạn do đột biến khiến tế bào phân chia liên tục, tích luỹ sai hỏng và tạo khối u."},
+{q:"Ở một loài có 2n = 8, khi giảm phân bình thường và không xảy ra trao đổi chéo, số loại giao tử tối đa khác nhau về nguồn gốc nhiễm sắc thể có thể tạo ra là",o:["8.","16.","4.","32."],a:1,area:"PB",lv:"Vận dụng cao",e:"2n = 8 nên n = 4 cặp nhiễm sắc thể tương đồng. Mỗi cặp phân li độc lập cho 2 khả năng, số loại giao tử tối đa = 2⁴ = 16."}
+];
+
+const P2 = [
+{stem:"Khi nói về cấu trúc màng sinh chất và sự vận chuyển các chất qua màng, mỗi nhận định sau đây là Đúng hay Sai?",area:"TD",items:[
+ {t:"Màng sinh chất được cấu tạo từ lớp kép phospholipid với các phân tử protein khảm vào.",a:true,e:"Đúng theo mô hình khảm động của Singer và Nicolson."},
+ {t:"Vận chuyển chủ động các chất ngược chiều gradient nồng độ cần protein vận chuyển và tiêu tốn năng lượng ATP.",a:true,e:"Đây là đặc điểm cơ bản của vận chuyển chủ động, ví dụ bơm Na⁺/K⁺."},
+ {t:"Các phân tử khí O₂ và CO₂ có thể khuếch tán trực tiếp qua lớp kép phospholipid.",a:true,e:"O₂ và CO₂ là phân tử nhỏ, không phân cực nên khuếch tán đơn giản qua lớp kép lipid."},
+ {t:"Khi đặt tế bào thực vật vào dung dịch ưu trương, tế bào sẽ hút nước, trương lên và bị vỡ.",a:false,e:"Sai. Trong môi trường ưu trương, tế bào thực vật mất nước và xảy ra co nguyên sinh; ngoài ra thành cellulose giúp tế bào không bị vỡ."}
+]},
+{stem:"Khi nói về thành phần hoá học của tế bào, mỗi nhận định sau đây là Đúng hay Sai?",area:"HH",items:[
+ {t:"Nước chiếm tỉ lệ lớn nhất trong khối lượng tươi của tế bào và là dung môi hoà tan nhiều chất.",a:true,e:"Nước thường chiếm khoảng 70–90% khối lượng tươi và là dung môi, môi trường phản ứng của tế bào."},
+ {t:"Tinh bột và cellulose đều được cấu tạo từ đơn phân là glucose.",a:true,e:"Cả hai đều là polysaccharide của glucose, chỉ khác nhau về kiểu liên kết glycosidic nên chức năng khác nhau."},
+ {t:"Mọi phân tử protein trong tế bào đều có cấu trúc không gian bậc 4.",a:false,e:"Sai. Chỉ những protein gồm từ hai chuỗi polypeptide trở lên mới có cấu trúc bậc 4 (ví dụ hemoglobin)."},
+ {t:"Trong phân tử DNA mạch kép, A liên kết với T bằng 2 liên kết hydrogen và G liên kết với C bằng 3 liên kết hydrogen.",a:true,e:"Đây là nguyên tắc bổ sung trong cấu trúc xoắn kép của DNA."}
+]},
+{stem:"Khi nói về chu kì tế bào và quá trình phân bào, mỗi nhận định sau đây là Đúng hay Sai?",area:"PB",items:[
+ {t:"Chu kì tế bào gồm kì trung gian và quá trình phân bào (pha M).",a:true,e:"Chu kì tế bào ở sinh vật nhân thực gồm kì trung gian (G1, S, G2) và pha M (phân chia nhân và phân chia tế bào chất)."},
+ {t:"DNA được nhân đôi ở pha S của kì trung gian.",a:true,e:"Pha S là pha tổng hợp (synthesis), nơi DNA nhân đôi làm nhiễm sắc thể đơn thành nhiễm sắc thể kép."},
+ {t:"Kết thúc giảm phân I, mỗi tế bào con có bộ nhiễm sắc thể đơn bội (n) ở trạng thái kép.",a:true,e:"Giảm phân I là phân bào giảm nhiễm: hai nhiễm sắc thể kép trong cặp tương đồng phân li, tạo tế bào con có n nhiễm sắc thể kép."},
+ {t:"Nguyên phân tạo ra các tế bào con có bộ nhiễm sắc thể giảm đi một nửa so với tế bào mẹ.",a:false,e:"Sai. Giảm một nửa bộ nhiễm sắc thể là đặc điểm của giảm phân; nguyên phân giữ nguyên bộ nhiễm sắc thể 2n."}
+]}
+];
+
+/* ================= STATE & HELPERS ================= */
+const LS = {key:"sh10_tb_apikey", model:"sh10_tb_model", attempts:"sh10_tb_attempts", info:"sh10_tb_info"};
+const LETTER = ["A","B","C","D"];
+const SUB = ["a","b","c","d"];
+const DEFAULT_MODELS = [
+  "gemini-3.1-pro",
+  "gemini-3.6-flash",
+  "gemini-3.5-flash",
+  "gemini-3.5-flash-lite",
+  "gemini-3.1-flash-lite",
+  "gemini-2.5-pro",
+  "gemini-2.5-flash",
+  "gemini-2.5-flash-lite"
+];
+let graded = null;
+const $ = (id) => document.getElementById(id);
+const fmt = (n) => n.toFixed(2).replace(".", ",");
+function esc(s){return String(s).replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+
+/* ================= RENDER ĐỀ ================= */
+function renderExam(){
+  $("p1").innerHTML = P1.map((it,i)=>{
+    const opts = it.o.map((o,j)=>
+      '<label class="opt" data-q="'+i+'" data-o="'+j+'">'+
+      '<input type="radio" name="q'+i+'" value="'+j+'" />'+
+      '<span><strong>'+LETTER[j]+'.</strong> '+esc(o)+'</span></label>').join("");
+    return '<div class="q" id="q'+i+'">'+
+      '<div class="qhead"><span class="qnum">Câu '+(i+1)+'</span>'+
+      '<span><span class="qtext">'+esc(it.q)+'</span><br><span class="lvtag">'+it.lv+' · '+AREAS[it.area]+'</span></span></div>'+
+      '<div class="opts">'+opts+'</div><div class="expl hidden" id="e1_'+i+'"></div></div>';
+  }).join("");
+
+  $("p2").innerHTML = P2.map((c,i)=>{
+    const rows = c.items.map((it,j)=>
+      '<tr><td><strong>'+SUB[j]+')</strong> '+esc(it.t)+'<div class="expl hidden" id="e2_'+i+'_'+j+'" style="margin-left:0"></div></td>'+
+      '<td class="tf"><label class="opt" style="justify-content:center;border:none;padding:4px"><input type="radio" name="ds'+i+'_'+j+'" value="D" /></label></td>'+
+      '<td class="tf"><label class="opt" style="justify-content:center;border:none;padding:4px"><input type="radio" name="ds'+i+'_'+j+'" value="S" /></label></td></tr>').join("");
+    return '<div class="q"><div class="qhead"><span class="qnum">Câu '+(i+1)+'</span>'+
+      '<span><span class="qtext">'+esc(c.stem)+'</span><br><span class="lvtag">'+AREAS[c.area]+'</span></span></div>'+
+      '<table class="ds"><thead><tr><th>Nội dung</th><th style="text-align:center">Đúng</th><th style="text-align:center">Sai</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
+  }).join("");
+}
+
+/* ================= CHẤM ĐIỂM ================= */
+const LADDER = [0, 0.1, 0.25, 0.5, 1.0];
+
+function grade(){
+  const p1 = P1.map((it,i)=>{
+    const el = document.querySelector('input[name="q'+i+'"]:checked');
+    const pick = el ? Number(el.value) : null;
+    return {i, pick, correct: pick === it.a, area: it.area, lv: it.lv};
+  });
+  const p1Correct = p1.filter(r=>r.correct).length;
+  const p1Score = p1Correct * 0.25;
+
+  const p2 = P2.map((c,i)=>{
+    const items = c.items.map((it,j)=>{
+      const el = document.querySelector('input[name="ds'+i+'_'+j+'"]:checked');
+      const pick = el ? el.value : null;
+      const picked = pick === null ? null : (pick === "D");
+      return {j, pick: picked, correct: picked !== null && picked === it.a};
+    });
+    const nCorrect = items.filter(x=>x.correct).length;
+    return {i, items, nCorrect, score: LADDER[nCorrect], area: c.area};
+  });
+  const p2Score = p2.reduce((s,c)=>s+c.score,0);
+
+  const areaStat = {};
+  Object.keys(AREAS).forEach(k=>areaStat[k]={correct:0,total:0});
+  p1.forEach(r=>{areaStat[r.area].total++; if(r.correct) areaStat[r.area].correct++;});
+  p2.forEach(c=>{areaStat[c.area].total+=4; areaStat[c.area].correct+=c.nCorrect;});
+
+  const lvStat = {};
+  p1.forEach(r=>{ lvStat[r.lv] = lvStat[r.lv] || {correct:0,total:0}; lvStat[r.lv].total++; if(r.correct) lvStat[r.lv].correct++; });
+
+  return {p1, p2, p1Correct, p1Score, p2Score, total:p1Score+p2Score, areaStat, lvStat};
+}
+
+/* ================= LƯỢT LÀM BÀI ================= */
+function attemptKey(name, cls){
+  return (name.trim().toLowerCase().replace(/\s+/g," ")) + "|" + (cls.trim().toLowerCase().replace(/\s+/g," "));
+}
+function getAttempts(){ try{ return JSON.parse(localStorage.getItem(LS.attempts) || "{}"); }catch(e){ return {}; } }
+function bumpAttempt(name, cls){
+  const all = getAttempts();
+  const k = attemptKey(name, cls);
+  all[k] = (all[k] || 0) + 1;
+  localStorage.setItem(LS.attempts, JSON.stringify(all));
+  return all[k];
+}
+function peekAttempt(name, cls){ return getAttempts()[attemptKey(name, cls)] || 0; }
+
+function showPrevInfo(){
+  const n = $("hsName").value, c = $("hsClass").value;
+  if(!n.trim() || !c.trim()){ $("prevInfo").textContent = ""; return; }
+  const k = peekAttempt(n,c);
+  $("prevInfo").textContent = k > 0
+    ? "Học sinh này đã làm bài " + k + " lần trên trình duyệt này. Lần nộp tiếp theo sẽ là lần thứ " + (k+1) + "."
+    : "Chưa có lượt làm bài nào được ghi nhận cho học sinh này.";
+}
+
+/* ================= BIỂU ĐỒ ================= */
+function drawChart(areaStat){
+  const cv = $("chart"), ctx = cv.getContext("2d");
+  const keys = Object.keys(AREAS);
+  const W = cv.width, H = cv.height;
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle = "#FFFFFF"; ctx.fillRect(0,0,W,H);
+  const padL = 260, padR = 70, padT = 24, padB = 24;
+  const plotW = W - padL - padR;
+  const n = keys.length;
+  const rowH = (H - padT - padB) / n;
+  const barH = Math.min(28, rowH * 0.5);
+
+  ctx.strokeStyle = "#E6E5E3"; ctx.lineWidth = 1;
+  ctx.fillStyle = "#7D7A75"; ctx.font = "12px -apple-system, Arial, sans-serif";
+  for(let p=0; p<=100; p+=25){
+    const x = padL + plotW * p/100;
+    ctx.beginPath(); ctx.moveTo(x, padT-6); ctx.lineTo(x, H-padB); ctx.stroke();
+    ctx.textAlign = "center"; ctx.fillText(p+"%", x, H-padB+16);
+  }
+
+  keys.forEach((k,i)=>{
+    const st = areaStat[k];
+    const pct = st.total ? st.correct/st.total*100 : 0;
+    const y = padT + i*rowH + rowH/2;
+    ctx.fillStyle = "#2C2C2B"; ctx.font = "600 13px -apple-system, Arial, sans-serif"; ctx.textAlign = "right";
+    ctx.fillText(AREAS[k], padL - 14, y + 1);
+    ctx.fillStyle = "#7D7A75"; ctx.font = "11px -apple-system, Arial, sans-serif";
+    ctx.fillText(st.correct + "/" + st.total + " ý đúng", padL - 14, y + 16);
+    ctx.fillStyle = "#F0EFED";
+    ctx.fillRect(padL, y - barH/2, plotW, barH);
+    const color = pct >= 80 ? "#46A171" : (pct >= 50 ? "#D5803B" : "#E56458");
+    ctx.fillStyle = color;
+    ctx.fillRect(padL, y - barH/2, Math.max(2, plotW*pct/100), barH);
+    ctx.fillStyle = "#2C2C2B"; ctx.font = "700 13px -apple-system, Arial, sans-serif"; ctx.textAlign = "left";
+    ctx.fillText(Math.round(pct) + "%", padL + plotW + 10, y + 5);
+  });
+}
+
+/* ================= HIỂN THỊ KẾT QUẢ ================= */
+function showResult(g, attemptNo, name, cls){
+  $("resultCard").classList.remove("hidden");
+  $("aiCard").classList.remove("hidden");
+  $("reviewCard").classList.remove("hidden");
+  $("attemptLine").textContent = "Lượt làm bài: lần thứ " + attemptNo;
+  $("scP1").textContent = fmt(g.p1Score);
+  $("scP2").textContent = fmt(g.p2Score);
+  $("scTotal").textContent = fmt(g.total);
+
+  $("p2detail").innerHTML = '<h3>Chi tiết điểm Phần II (luỹ tiến)</h3><table class="ds"><thead><tr><th>Câu</th><th>Số ý đúng</th><th>Điểm</th></tr></thead><tbody>'+
+    g.p2.map(c=>'<tr><td>Câu '+(c.i+1)+'</td><td>'+c.nCorrect+'/4</td><td><strong>'+fmt(c.score)+'</strong></td></tr>').join("")+
+    '</tbody></table>';
+
+  drawChart(g.areaStat);
+
+  P1.forEach((it,i)=>{
+    document.querySelectorAll('.opt[data-q="'+i+'"]').forEach(el=>{
+      const j = Number(el.dataset.o);
+      el.classList.remove("correct","wrong");
+      if(j === it.a) el.classList.add("correct");
+      else if(g.p1[i].pick === j) el.classList.add("wrong");
+      el.querySelector("input").disabled = true;
+    });
+    const ex = $("e1_"+i);
+    ex.classList.remove("hidden");
+    const st = g.p1[i].correct ? '<span class="ok">Đúng.</span> ' : ('<span class="no">Sai.</span> Đáp án đúng: <strong>'+LETTER[it.a]+'</strong>. ');
+    ex.innerHTML = st + esc(it.e);
+  });
+  P2.forEach((c,i)=>{
+    c.items.forEach((it,j)=>{
+      document.querySelectorAll('input[name="ds'+i+'_'+j+'"]').forEach(el=>el.disabled = true);
+      const ex = $("e2_"+i+"_"+j);
+      ex.classList.remove("hidden");
+      const r = g.p2[i].items[j];
+      const st = r.correct ? '<span class="ok">Đúng.</span> ' : ('<span class="no">Sai.</span> Đáp án: <strong>'+(it.a?"Đúng":"Sai")+'</strong>. ');
+      ex.innerHTML = st + esc(it.e);
+    });
+  });
+  $("review").innerHTML = '<p class="hint">Đáp án đúng và giải thích đã được hiển thị trực tiếp dưới từng câu ở Phần I và Phần II phía trên.</p>';
+
+  const wrong1 = g.p1.filter(r=>!r.correct).map(r=>r.i+1);
+  const lines = [];
+  lines.push("KẾT QUẢ ÔN TẬP SINH HỌC 10 — CHỦ ĐỀ SINH HỌC TẾ BÀO");
+  lines.push("Họ và tên: " + name + "   |   Lớp: " + cls);
+  lines.push("Thời điểm nộp: " + new Date().toLocaleString("vi-VN"));
+  lines.push("Lượt làm bài: lần thứ " + attemptNo);
+  lines.push("------------------------------------------------");
+  lines.push("Phần I (28 câu): " + g.p1Correct + "/28 câu đúng — " + fmt(g.p1Score) + "/7,00 điểm");
+  g.p2.forEach(c=>lines.push("Phần II – Câu " + (c.i+1) + ": " + c.nCorrect + "/4 ý đúng — " + fmt(c.score) + " điểm"));
+  lines.push("Phần II tổng: " + fmt(g.p2Score) + "/3,00 điểm");
+  lines.push("TỔNG ĐIỂM: " + fmt(g.total) + "/10,00");
+  lines.push("------------------------------------------------");
+  lines.push("Năng lực theo mảng kiến thức:");
+  Object.keys(AREAS).forEach(k=>{
+    const st = g.areaStat[k];
+    const pct = st.total ? Math.round(st.correct/st.total*100) : 0;
+    lines.push("  · " + AREAS[k] + ": " + st.correct + "/" + st.total + " (" + pct + "%)");
+  });
+  lines.push("Theo mức độ nhận thức (Phần I):");
+  Object.keys(g.lvStat).forEach(k=>lines.push("  · " + k + ": " + g.lvStat[k].correct + "/" + g.lvStat[k].total));
+  lines.push("Các câu Phần I làm sai: " + (wrong1.length ? wrong1.join(", ") : "không có"));
+  $("summaryBox").textContent = lines.join("\n");
+
+  if(typeof $("resultCard").scrollIntoView === "function"){
+    $("resultCard").scrollIntoView({behavior:"smooth", block:"start"});
+  }
+}
+
+/* ================= GEMINI ================= */
+function fillModels(list, selected){
+  const sel = $("modelSel");
+  sel.innerHTML = list.map(m=>'<option value="'+esc(m)+'">'+esc(m)+'</option>').join("");
+  if(selected && list.indexOf(selected) >= 0) sel.value = selected;
+}
+
+async function fetchModelList(key){
+  const res = await fetch("https://generativelanguage.googleapis.com/v1beta/models?pageSize=1000&key=" + encodeURIComponent(key));
+  const data = await res.json();
+  if(!res.ok) throw new Error((data.error && data.error.message) || ("HTTP " + res.status));
+  const models = (data.models || [])
+    .filter(m => (m.supportedGenerationMethods || []).indexOf("generateContent") >= 0)
+    .map(m => m.name.replace(/^models\//, ""))
+    .filter(n => !/embedding|aqa|imagen|veo|tts|image-generation|native-audio|live-/i.test(n));
+  if(!models.length) throw new Error("API Key này không có mô hình sinh văn bản nào khả dụng");
+  return models.sort(rankModel);
+}
+
+function modelScore(n){
+  let s = 0;
+  const v = (n.match(/gemini-(\d+(?:\.\d+)?)/) || [0, 0])[1];
+  s += parseFloat(v) * 100;
+  if(/flash/.test(n)) s += 30;
+  if(/pro/.test(n)) s += 20;
+  if(/lite/.test(n)) s -= 10;
+  if(/preview|exp|thinking|latest-\d/.test(n)) s -= 40;
+  if(/-\d{2}-\d{2}$|-\d{3}$/.test(n)) s -= 15;
+  return s;
+}
+function rankModel(a, b){ return modelScore(b) - modelScore(a) || a.localeCompare(b); }
+
+async function refreshModels(silent){
+  const key = $("apiKey").value.trim();
+  const msg = $("keyMsg");
+  if(!key){
+    if(!silent){ msg.className = "msg err"; msg.textContent = "Vui lòng nhập API Key trước khi cập nhật danh sách mô hình."; }
+    return null;
+  }
+  msg.className = "msg"; msg.innerHTML = '<span class="spinner"></span>Đang lấy danh sách mô hình khả dụng từ Google…';
+  try{
+    const models = await fetchModelList(key);
+    const saved = localStorage.getItem(LS.model);
+    const chosen = (saved && models.indexOf(saved) >= 0) ? saved : models[0];
+    fillModels(models, chosen);
+    localStorage.setItem(LS.model, chosen);
+    msg.className = "msg good";
+    msg.textContent = "Đã cập nhật " + models.length + " mô hình khả dụng cho API Key này. Đang chọn: " + chosen + ".";
+    return models;
+  }catch(err){
+    msg.className = "msg err";
+    msg.textContent = "Không lấy được danh sách mô hình (" + err.message + "). Tạm dùng danh sách dự phòng.";
+    fillModels(DEFAULT_MODELS, localStorage.getItem(LS.model));
+    return null;
+  }
+}
+
+function buildPrompt(g, name, cls, attemptNo){
+  const wrong1 = g.p1.filter(r=>!r.correct).map(r=>{
+    const it = P1[r.i];
+    return "- Câu " + (r.i+1) + " [" + AREAS[it.area] + " · " + it.lv + "]: " + it.q +
+      " | Học sinh chọn: " + (r.pick === null ? "không trả lời" : LETTER[r.pick] + ". " + it.o[r.pick]) +
+      " | Đáp án đúng: " + LETTER[it.a] + ". " + it.o[it.a];
+  }).join("\n");
+  const wrong2 = [];
+  g.p2.forEach(c=>{
+    c.items.forEach((r,j)=>{
+      if(!r.correct){
+        const it = P2[c.i].items[j];
+        wrong2.push("- Câu " + (c.i+1) + SUB[j] + " [" + AREAS[P2[c.i].area] + "]: " + it.t +
+          " | Học sinh chọn: " + (r.pick === null ? "không trả lời" : (r.pick ? "Đúng" : "Sai")) +
+          " | Đáp án đúng: " + (it.a ? "Đúng" : "Sai"));
+      }
+    });
+  });
+  const areas = Object.keys(AREAS).map(k=>{
+    const st = g.areaStat[k];
+    return "- " + AREAS[k] + ": " + st.correct + "/" + st.total + " ý đúng (" + (st.total ? Math.round(st.correct/st.total*100) : 0) + "%)";
+  }).join("\n");
+  const lvs = Object.keys(g.lvStat).map(k=>"- " + k + ": " + g.lvStat[k].correct + "/" + g.lvStat[k].total).join("\n");
+
+  return [
+"Bạn là giáo viên Sinh học THPT giàu kinh nghiệm. Hãy phân tích kết quả bài ôn tập chủ đề Sinh học tế bào (Sinh học 10) của học sinh dưới đây.",
+"Yêu cầu: viết bằng tiếng Việt, chính xác khoa học tuyệt đối, không bịa đặt. Chỉ dùng markdown đơn giản (## tiêu đề, - gạch đầu dòng, **in đậm**).",
+"Cấu trúc bắt buộc:",
+"## 1. Nhận xét chung",
+"## 2. Phân tích theo từng phần (Phần I trắc nghiệm, Phần II đúng/sai)",
+"## 3. Phân tích theo từng mảng kiến thức",
+"## 4. Giải thích ngắn gọn các câu làm sai (mỗi câu 1–2 câu văn, nêu rõ vì sao đáp án đúng là đúng)",
+"## 5. Khuyến nghị và kiến thức cần bổ sung (kèm kế hoạch ôn tập cụ thể)",
+"",
+"THÔNG TIN BÀI LÀM",
+"Học sinh: " + name + " — Lớp: " + cls + " — Lượt làm bài: lần thứ " + attemptNo,
+"Phần I: " + g.p1Correct + "/28 câu đúng = " + fmt(g.p1Score) + "/7,00 điểm",
+"Phần II (thang luỹ tiến 0,1 – 0,25 – 0,5 – 1,0): " + g.p2.map(c=>"Câu "+(c.i+1)+": "+c.nCorrect+"/4 ý = "+fmt(c.score)).join("; ") + " — tổng " + fmt(g.p2Score) + "/3,00",
+"Tổng điểm: " + fmt(g.total) + "/10,00",
+"",
+"KẾT QUẢ THEO MẢNG KIẾN THỨC",
+areas,
+"",
+"KẾT QUẢ THEO MỨC ĐỘ NHẬN THỨC (Phần I)",
+lvs,
+"",
+"CÁC CÂU PHẦN I LÀM SAI",
+(wrong1 || "(không có)"),
+"",
+"CÁC Ý PHẦN II LÀM SAI",
+(wrong2.length ? wrong2.join("\n") : "(không có)")
+  ].join("\n");
+}
+
+function mdToHtml(md){
+  const out = [];
+  let inList = false;
+  md.split("\n").forEach(raw=>{
+    let line = esc(raw.trim());
+    line = line.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+    if(/^#{1,6}\s/.test(line)){
+      if(inList){ out.push("</ul>"); inList = false; }
+      out.push("<h4>" + line.replace(/^#{1,6}\s*/, "") + "</h4>");
+    } else if(/^[-*]\s+/.test(line)){
+      if(!inList){ out.push("<ul>"); inList = true; }
+      out.push("<li>" + line.replace(/^[-*]\s+/, "") + "</li>");
+    } else if(line === ""){
+      if(inList){ out.push("</ul>"); inList = false; }
+    } else {
+      if(inList){ out.push("</ul>"); inList = false; }
+      out.push("<p>" + line + "</p>");
+    }
+  });
+  if(inList) out.push("</ul>");
+  return out.join("");
+}
+
+async function callGemini(key, model, prompt){
+  const url = "https://generativelanguage.googleapis.com/v1beta/models/" + encodeURIComponent(model) + ":generateContent?key=" + encodeURIComponent(key);
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      contents: [{role: "user", parts: [{text: prompt}]}],
+      generationConfig: {temperature: 0.3, maxOutputTokens: 4096}
+    })
+  });
+  const data = await res.json();
+  if(!res.ok){
+    const e = new Error((data.error && data.error.message) || ("HTTP " + res.status));
+    e.status = res.status;
+    throw e;
+  }
+  const parts = (((data.candidates || [])[0] || {}).content || {}).parts || [];
+  const text = parts.map(p=>p.text || "").join("\n").trim();
+  if(!text) throw new Error("mô hình không trả về nội dung");
+  return text;
+}
+
+function isModelError(err){
+  return err.status === 404 || /no longer available|not found|is not supported|not available|deprecat/i.test(err.message || "");
+}
+
+async function runAI(){
+  if(!graded){ return; }
+  const key = $("apiKey").value.trim();
+  const msg = $("aiMsg"), out = $("aiOut");
+  if(!key){ msg.className = "msg err"; msg.textContent = "Chưa có API Key. Vui lòng nhập và lưu API Key Gemini ở phần Cấu hình AI."; return; }
+  $("aiBtn").disabled = true;
+  const prompt = buildPrompt(graded, graded.name, graded.cls, graded.attemptNo);
+  let model = $("modelSel").value;
+  msg.className = "msg"; msg.innerHTML = '<span class="spinner"></span>Đang phân tích bằng ' + esc(model) + '…';
+  try{
+    let text, usedModel = model, firstErr = null;
+    try{
+      text = await callGemini(key, model, prompt);
+    }catch(err){
+      if(!isModelError(err)) throw err;
+      firstErr = err;
+      msg.innerHTML = '<span class="spinner"></span>Mô hình ' + esc(model) + ' không còn khả dụng. Đang tự tìm mô hình thay thế…';
+      const models = await fetchModelList(key);
+      fillModels(models, models[0]);
+      const candidates = models.filter(m => m !== model).slice(0, 4);
+      for(const m of candidates){
+        try{
+          msg.innerHTML = '<span class="spinner"></span>Đang thử lại với ' + esc(m) + '…';
+          text = await callGemini(key, m, prompt);
+          usedModel = m;
+          break;
+        }catch(e2){
+          if(!isModelError(e2)) throw e2;
+        }
+      }
+      if(!text) throw firstErr;
+      $("modelSel").value = usedModel;
+      localStorage.setItem(LS.model, usedModel);
+    }
+    out.innerHTML = mdToHtml(text);
+    out.classList.remove("hidden");
+    msg.className = "msg good";
+    msg.textContent = "Phân tích xong bằng mô hình " + usedModel + "." +
+      (usedModel !== model ? " (Đã tự động chuyển sang mô hình này vì " + model + " không còn khả dụng.)" : "");
+  }catch(err){
+    msg.className = "msg err";
+    msg.textContent = isModelError(err)
+      ? ("Mô hình " + model + " không khả dụng với API Key này. Hãy bấm “Cập nhật danh sách mô hình mới nhất” rồi chọn một mô hình trong danh sách. Chi tiết: " + err.message)
+      : ("Lỗi khi gọi AI: " + err.message + ". Hãy kiểm tra API Key và kết nối mạng.");
+  }finally{
+    $("aiBtn").disabled = false;
+  }
+}
+
+/* ================= SỰ KIỆN ================= */
+function init(){
+  renderExam();
+  fillModels(DEFAULT_MODELS, localStorage.getItem(LS.model));
+  const savedKey = localStorage.getItem(LS.key);
+  if(savedKey){
+    $("apiKey").value = savedKey;
+    $("keyMsg").className = "msg good";
+    $("keyMsg").textContent = "Đã tải API Key đã lưu trên trình duyệt này.";
+    refreshModels(true);
+  }
+  try{
+    const info = JSON.parse(localStorage.getItem(LS.info) || "{}");
+    if(info.name) $("hsName").value = info.name;
+    if(info.cls) $("hsClass").value = info.cls;
+  }catch(e){}
+  showPrevInfo();
+
+  $("hsName").addEventListener("input", showPrevInfo);
+  $("hsClass").addEventListener("input", showPrevInfo);
+
+  $("saveKey").addEventListener("click", ()=>{
+    const k = $("apiKey").value.trim();
+    if(!k){ $("keyMsg").className = "msg err"; $("keyMsg").textContent = "Chưa nhập API Key."; return; }
+    localStorage.setItem(LS.key, k);
+    localStorage.setItem(LS.model, $("modelSel").value);
+    refreshModels();
+  });
+  $("clearKey").addEventListener("click", ()=>{
+    localStorage.removeItem(LS.key);
+    $("apiKey").value = "";
+    $("keyMsg").className = "msg"; $("keyMsg").textContent = "Đã xoá API Key khỏi trình duyệt.";
+  });
+  $("modelSel").addEventListener("change", ()=>localStorage.setItem(LS.model, $("modelSel").value));
+  $("refreshModels").addEventListener("click", ()=>refreshModels());
+
+  $("submitBtn").addEventListener("click", ()=>{
+    const name = $("hsName").value.trim(), cls = $("hsClass").value.trim();
+    const sm = $("submitMsg");
+    if(!name || !cls){ sm.className = "msg err"; sm.textContent = "Vui lòng nhập họ tên và lớp trước khi nộp bài."; return; }
+    const unanswered = P1.filter((_,i)=>!document.querySelector('input[name="q'+i+'"]:checked')).length;
+    let unanswered2 = 0;
+    P2.forEach((c,i)=>c.items.forEach((_,j)=>{ if(!document.querySelector('input[name="ds'+i+'_'+j+'"]:checked')) unanswered2++; }));
+    if(unanswered + unanswered2 > 0){
+      const ok = confirm("Còn " + unanswered + " câu Phần I và " + unanswered2 + " ý Phần II chưa trả lời. Vẫn nộp bài?");
+      if(!ok) return;
+    }
+    const g = grade();
+    const attemptNo = bumpAttempt(name, cls);
+    localStorage.setItem(LS.info, JSON.stringify({name, cls}));
+    g.name = name; g.cls = cls; g.attemptNo = attemptNo;
+    graded = g;
+    sm.className = "msg good"; sm.textContent = "Đã nộp bài và chấm điểm.";
+    $("submitBtn").disabled = true;
+    showResult(g, attemptNo, name, cls);
+    showPrevInfo();
+  });
+
+  $("resetBtn").addEventListener("click", ()=>location.reload());
+
+  $("copyBtn").addEventListener("click", async ()=>{
+    try{
+      await navigator.clipboard.writeText($("summaryBox").textContent);
+      $("copyMsg").className = "msg good"; $("copyMsg").textContent = "Đã sao chép tóm tắt.";
+    }catch(e){
+      $("copyMsg").className = "msg err"; $("copyMsg").textContent = "Không sao chép được, hãy bôi đen và copy thủ công.";
+    }
+  });
+
+  $("aiBtn").addEventListener("click", runAI);
+}
+document.addEventListener("DOMContentLoaded", init);
+</script>
+</body>
+</html>
