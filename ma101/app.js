@@ -467,6 +467,8 @@ function enterExam(attempt, draftData) {
   state.autoSubmitFired = false;
   state.isSubmitting = false;
   state.answers = (draftData && draftData.answers) || { mcq: {}, ds: {}, short: {}, essay: {} };
+  $("#btn-submit").disabled = false;
+  $("#btn-submit").textContent = "Nộp bài";
   state.draftKey = draftKeyFor(attempt.maHS, attempt.attemptId);
   state.examRendered = false;
   renderExam();
