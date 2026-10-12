@@ -1,72 +1,7 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kiểm tra kết nối — Thi thử Sinh học 10</title>
-<style>
-body{font-family:system-ui,sans-serif;max-width:640px;margin:0 auto;padding:16px;line-height:1.6}
-input{width:100%;padding:10px;margin:6px 0;box-sizing:border-box}
-button{padding:12px 18px;margin:6px 4px 6px 0;font-size:16px}
-pre{background:#f4f4f4;padding:12px;overflow:auto;font-size:13px;white-space:pre-wrap}
-.ok{color:#0a7d2c;font-weight:bold}.err{color:#c00;font-weight:bold}
-.step{border:1px solid #ddd;border-radius:8px;padding:12px;margin:12px 0}
-</style>
-</head>
-<body>
-<h2>Kiểm tra kết nối thu bài</h2>
-<p>Trang này xác minh luồng <b>GitHub Pages → Apps Script → Google Sheets</b>.
-Dán URL Web App (dạng <code>https://script.google.com/macros/s/…/exec</code>):</p>
-<input id="url" placeholder="https://script.google.com/macros/s/…/exec">
-<div class="step">
-<h3>Bước 1 — Kiểm tra đọc (không ghi dữ liệu)</h3>
-<button onclick="testRead()">Kiểm tra</button>
-<div id="r1"></div>
-</div>
-<div class="step">
-<h3>Bước 2 — Kiểm tra ghi (tạo 1 bài nộp thử)</h3>
-<p>Bài thử được đánh dấu <code>KIEM-TRA</code> trong cột GhiChu — nhớ <b>xóa dòng này</b>
-trong trang <code>BaiNop</code> sau khi kiểm tra xong.</p>
-<button onclick="testWrite()">Gửi bài thử</button>
-<div id="r2"></div>
-</div>
-<script>
-function show(id, html){ document.getElementById(id).innerHTML = html; }
-function post(url, data){
-  return fetch(url, { method:"POST",
-    headers:{ "Content-Type":"text/plain;charset=utf-8" },
-    body: JSON.stringify(data) }).then(function(r){ return r.json(); });
-}
-function testRead(){
-  var url = document.getElementById("url").value.trim();
-  show("r1","Đang kiểm tra…");
-  post(url, {action:"examinfo"}).then(function(res){
-    show("r1", '<span class="ok">THÀNH CÔNG</span><pre>'+JSON.stringify(res,null,2)+"</pre>");
-  }).catch(function(e){
-    show("r1", '<span class="err">THẤT BẠI</span><pre>'+String(e)+"</pre><p>Kiểm tra: URL đúng? Web App đã triển khai phiên bản mới? Quyền truy cập = Bất kỳ ai?</p>");
-  });
-}
-function testWrite(){
-  var url = document.getElementById("url").value.trim();
-  show("r2","Đang gửi bài thử…");
-  var uuid = (crypto.randomUUID ? crypto.randomUUID() : "t-"+Date.now());
-  post(url, {action:"start", maDotThi:"SH10-GK1-101", hoTen:"KIEM-TRA-KET-NOI", lop:"TEST", maHS:"TEST-DEL"})
-  .then(function(s){
-    if(!s.ok) throw new Error("start: "+s.error+" — "+s.message);
-    return post(url, {action:"submit", maDotThi:"SH10-GK1-101", attemptId:s.attemptId,
-      hoTen:"KIEM-TRA-KET-NOI", lop:"TEST", maHS:"TEST-DEL", serverStartISO:s.serverStartISO,
-      submissionUuid:uuid, answers:{mcq:{},ds:{},short:{},essay:{}}});
-  }).then(function(res){
-    if(res.ok){
-      show("r2", '<span class="ok">THÀNH CÔNG — bài đã lưu vào Sheets</span><pre>'+
-        JSON.stringify(res,null,2)+"</pre><p>Mở trang <b>BaiNop</b> kiểm tra dòng mới, rồi <b>xóa dòng KIEM-TRA</b>.</p>");
-    } else {
-      show("r2", '<span class="err">MÁY CHỦ TỪ CHỐI</span><pre>'+JSON.stringify(res,null,2)+"</pre>");
-    }
-  }).catch(function(e){
-    show("r2", '<span class="err">THẤT BẠI (lỗi mạng hoặc máy chủ)</span><pre>'+String(e)+"</pre>");
-  });
-}
-</script>
-</body>
-</html>
+<!doctype html>
+<html lang="vi"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Kiểm tra kết nối mã 101</title>
+<style>body{font:17px system-ui;max-width:700px;margin:40px auto;padding:20px;line-height:1.6}button{font:inherit;padding:12px}pre{white-space:pre-wrap;background:#eef4f8;padding:16px}</style>
+<h1>Kiểm tra kết nối mã 101</h1><p>Kiểm tra dịch vụ và tra cứu qua trình duyệt. Thao tác này không tạo bài nộp.</p><button id="check">Kiểm tra</button><pre id="result" role="status"></pre><p><a href="./">Về trang làm bài</a></p>
+<script src="config.js"></script><script>
+document.getElementById('check').onclick=async function(){const out=document.getElementById('result');this.disabled=true;out.textContent='Đang kiểm tra…';try{const u=window.APP_CONFIG.APPS_SCRIPT_URL;if(!u)throw Error('Chưa cấu hình địa chỉ dịch vụ');const health=await fetch(u).then(r=>r.json());if(!health.ok||health.version!=='101-v3')throw Error('Phiên bản dịch vụ chưa đúng');const lookup=await fetch(u,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'lookup',code:'KIEM-TRA-KHONG-TON-TAI'})}).then(r=>r.json());if(!lookup.ok||lookup.found!==false)throw Error('Tra cứu trả về dữ liệu không mong đợi');out.textContent='THÀNH CÔNG: dịch vụ 101-v3 hoạt động; trình duyệt đọc được phản hồi GET và POST.\nĐể kiểm tra ghi bài, dùng một mã học sinh kiểm thử riêng trên trang làm bài.';}catch(e){out.textContent='THẤT BẠI: '+e.message;}finally{this.disabled=false;}};
+</script></html>
