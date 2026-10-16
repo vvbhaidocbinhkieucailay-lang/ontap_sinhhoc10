@@ -1,8 +1,3 @@
-# Địa chỉ ôn tập Sinh học 10 hiện tại
+# Trang thi thử cũ đã ngừng sử dụng
 
-Nội dung đề cũ đã được gỡ. Các đường dẫn HTML cũ chuyển sang trang hiện tại:
-
-- [Đề 102](https://vvbhaidocbinhkieucailay-lang.github.io/on-tap-cong-nghe-12/sinh-10/?made=102)
-- [Đề 103](https://vvbhaidocbinhkieucailay-lang.github.io/on-tap-cong-nghe-12/sinh-10/?made=103)
-
-Không thay quyền chia sẻ Google hoặc bật/tắt GitHub Pages.
+Đã tắt làm bài, nộp bài và chuyển hướng tự động. Trang HTML chỉ thông báo ngừng sử dụng và liệt kê website ôn tập hiện tại. Không thay quyền Google hoặc bật/tắt GitHub Pages.
