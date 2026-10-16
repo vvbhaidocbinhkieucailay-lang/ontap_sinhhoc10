@@ -1,7 +1,8 @@
 <!doctype html>
-<html lang="vi"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Kiểm tra kết nối mã 101</title>
-<style>body{font:17px system-ui;max-width:700px;margin:40px auto;padding:20px;line-height:1.6}button{font:inherit;padding:12px}pre{white-space:pre-wrap;background:#eef4f8;padding:16px}</style>
-<h1>Kiểm tra kết nối mã 101</h1><p>Kiểm tra dịch vụ và tra cứu qua trình duyệt. Thao tác này không tạo bài nộp.</p><button id="check">Kiểm tra</button><pre id="result" role="status"></pre><p><a href="./">Về trang làm bài</a></p>
-<script src="config.js"></script><script>
-document.getElementById('check').onclick=async function(){const out=document.getElementById('result');this.disabled=true;out.textContent='Đang kiểm tra…';try{const u=window.APP_CONFIG.APPS_SCRIPT_URL;if(!u)throw Error('Chưa cấu hình địa chỉ dịch vụ');const health=await fetch(u).then(r=>r.json());if(!health.ok||health.version!=='101-v3')throw Error('Phiên bản dịch vụ chưa đúng');const lookup=await fetch(u,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'lookup',code:'KIEM-TRA-KHONG-TON-TAI'})}).then(r=>r.json());if(!lookup.ok||lookup.found!==false)throw Error('Tra cứu trả về dữ liệu không mong đợi');out.textContent='THÀNH CÔNG: dịch vụ 101-v3 hoạt động; trình duyệt đọc được phản hồi GET và POST.\nĐể kiểm tra ghi bài, dùng một mã học sinh kiểm thử riêng trên trang làm bài.';}catch(e){out.textContent='THẤT BẠI: '+e.message;}finally{this.disabled=false;}};
-</script></html>
+<html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Chuyển đến ôn tập Sinh học 10</title><meta name="robots" content="noindex"><link rel="canonical" href="https://vvbhaidocbinhkieucailay-lang.github.io/on-tap-cong-nghe-12/sinh-10/"><style>body{font:18px/1.6 system-ui,sans-serif;max-width:600px;margin:12vh auto;padding:24px;color:#184d2b}a{color:#176b3a}</style></head><body><h1>Ôn tập Sinh học 10</h1><p>Trang làm bài đã chuyển sang địa chỉ hiện tại.</p><p><a id="link-moi" href="https://vvbhaidocbinhkieucailay-lang.github.io/on-tap-cong-nghe-12/sinh-10/?made=102">Mở trang ôn tập</a></p><script>
+const base="https://vvbhaidocbinhkieucailay-lang.github.io/on-tap-cong-nghe-12/sinh-10/";
+const code=new URLSearchParams(location.search).get('made')==='103'?'103':'102';
+const target=base+'?made='+code;
+document.getElementById('link-moi').href=target;
+location.replace(target);
+</script></body></html>
